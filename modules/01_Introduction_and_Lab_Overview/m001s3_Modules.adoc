@@ -4,15 +4,11 @@
 
 == Modules
 
-* Ansible Overview
-
-* Your First Playbook
-
-* Loops, Variables, and Return Values
-
-* Roles
-
-* Ansible Vault
+* Introduction and Lab Overview
+* Introduction to Smart Management
+* Working with Vulnerabilities (SM)
+* Working with Compliance (SM)
+* Working with Drift Analysis (SM)
 
 ifdef::showscript[]
 
