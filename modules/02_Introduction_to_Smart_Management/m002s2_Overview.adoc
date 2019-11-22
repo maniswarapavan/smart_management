@@ -4,18 +4,18 @@
 
 == Your Challenges
 
+[cols="a,2"]
 |===
-| Image | description 
-| image::images/complexity_image.png[Complexity,100,100] 
+|image::images/complexity_image.png[Complexity,100,100] 
 | Complexity of managing systems in a hybrid and multi-cloud environment 
 | image::images/flexibility_image.png[flexibility,100,100]
 | Lack of flexibility to manage these systems on-prem or in the cloud
 | image::images/scalable_image.png[scalable,100,100]
 | Ensuring that systems are always up to date and easily scalable
-| image::images/vulnerabilites_image.png[vulnerabilites,100,100]
+| image::images/vulnerabilities_image.png[vulnerabilites,100,100]
 | Inability to proactively assess, analyze, and remediate any security vulnerabilities
-
 |===
+
 ifdef::showscript[]
 
 Transcript:
