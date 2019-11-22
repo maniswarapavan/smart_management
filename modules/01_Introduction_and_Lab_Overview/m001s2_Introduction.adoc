@@ -1,0 +1,23 @@
+
+:scrollbar:
+:data-uri:
+
+== Introduction
+
+* Red Hat^(R)^ Smart Management
+
+* This course is designed for consultants and architect planning to use Red Hat Smart Management, which teaches you how to:
+
+** Red Hat Smart Management
+** Key Challenges
+** Working with Vulnerabilites, Compliance and Drift Analysis
+
+* Labs and assessments test your ability to use Smart Management. 
+
+
+ifdef::showscript[]
+
+Transcript:
+
+
+endif::showscript[]

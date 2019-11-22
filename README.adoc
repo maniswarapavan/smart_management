@@ -3,7 +3,7 @@
 
 
 == Contents
-. Introduction Lab Overview
+. Introduction and Lab Overview
 . Introduction to Smart Management
 . Working with Vulnerabilities (SM)
 . Working with Compliance (SM)
