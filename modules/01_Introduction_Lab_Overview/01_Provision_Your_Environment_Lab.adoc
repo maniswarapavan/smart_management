@@ -1,0 +1,93 @@
+:scrollbar:
+:data-uri:
+:linkattrs:
+:toc2:
+:labname: About Ansible Implementation 
+
+== {labname} Lab
+
+In this lab, you set up the lab environment for this course. Then you review the lab environment to become familiar with the various hosts used in this course. Finally, you connect to the `bastion` host from which you can manage the other hosts.
+
+.Goals
+* Provision lab environment
+* Review lab environment
+* Access `bastion` host
+
+:numbered:
+
+
+== Set Up Lab Environment
+
+=== Provision Lab Environment
+
+Before you can run the labs for this course, you must provision the lab environment.
+
+. Access the link:https://labs.opentlc.com/[OPENTLC lab provisioning system^], which is built on top of Red Hat CloudForms(R).
+
+. Use your credentials to log in.
++
+[TIP]
+====
+If you do not remember your username or password, link:https://www.opentlc.com/account[reset your credentials or obtain a username reminder^].
+====
+
+. After you log in, navigate to *Services -> Catalogs -> All Services -> OPENTLC Automation*.
+
+. On the right side of the screen, locate *Ansible Implementation* and click *Order*.
+
+. On the next screen, click *Submit* at the lower right to order your Ansible Implementation environment.
+
+. Check your email for a message from Red Hat describing how to connect to the environment.
+
+. Wait about 20 minutes to allow the environment to build.
+
+=== Review Lab Environment
+
+In this course, the main computer system you use for hands-on learning activities is `bastion`. You also use five other machines: `app1`, `app2`, `appdb`, `frontend1`, and `support1`. Those five systems are all in the `*.${GUID}.internal` DNS domain.
+
+As the `root` user from `bastion`, you can connect to all of the systems as `ec2-user` without entering a password. SSH keys are already set up for you.
+
+IMPORTANT: You can log in to only the `bastion` system from outside the lab environment with SSH. You must use your OPENTLC SSO username and SSH key to connect to `bastion`.
+
+You use the following machines in the labs:
+
+* Bastion server: `bastion.${GUID}.internal`, `bastion.${GUID}.example.opentlc.com`
+* HAProxy server: `frontend1.${GUID}.internal`, `frontend1.${GUID}.example.opentlc.com`
+* Tomcat servers: `app{1,2}.${GUID}.internal`, `app{1,2}.${GUID}.example.opentlc.com`
+* Database server: `appdb1.${GUID}.internal`, `appdb1.${GUID}.example.opentlc.com`
+* Support server: `support1.${GUID}.internal`, `support1.${GUID}.example.opentlc.com`
+
+The yum repository files are already configured on the systems.
+
+== Access Lab Environment
+
+=== Set Up SSH
+
+To access your `bastion` system via SSH, use your personal OPENTLC SSO username and public SSH key.
+
+[NOTE]
+Unless otherwise noted, you cannot use SSH to connect directly as `root`.
+
+If you have not already done so, you must provide a public SSH key.
+
+. Go to link:https://www.opentlc.com/update[https://www.opentlc.com/update^] and log in.
+. Paste your public key in the appropriate field.
+
+[TIP]
+For more information on generating an SSH key, see link:https://www.opentlc.com/ssh.html[Setting Up an SSH Key Pair^].
+
+=== Access Environment with SSH
+
+. Remotely connect to the lab `bastion` host:
++
+[source,bash]
+----
+$ ssh -i path-to-your-ssh-key your-sso-login@bastion.${GUID}.example.opentlc.com
+----
+* Make sure to use your private SSH key and your OPENTLC SSO username.
++
+[NOTE]
+When entering commands, replace `${GUID}` with your personal GUID, which is provided at the top of the lab provisioning email you received from Red Hat.
++
+[IMPORTANT]
+Always use the _FQDN hostname_ and not the AWS DNS entry when using SSH to connect to your OPENTLC lab hosts to avoid problems.

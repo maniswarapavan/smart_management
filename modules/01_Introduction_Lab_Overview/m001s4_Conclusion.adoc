@@ -1,0 +1,23 @@
+
+:scrollbar:
+:data-uri:
+
+== Conclusion
+
+* Labs are key
+
+* Practice and automating day-to-day tasks help you understand Ansible usage
+
+* Course is foundational for advanced courses
+
+ifdef::showscript[]
+
+Transcript:
+
+* Labs are the key. Just going through the slides does not help you.
+
+* Practice and automating day-to-day tasks help you understand Ansible usage.
+
+* This course is foundational for advanced courses on Ansible Engine.
+
+endif::showscript[]

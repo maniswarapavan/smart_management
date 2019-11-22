@@ -1,0 +1,14 @@
+==  Smart Management Foundations
+
+
+
+== Contents
+. Introduction Lab Overview
+. Introduction to Smart Management
+. Working with Vulnerabilities (SM)
+. Working with Compliance (SM)
+. Working with Drift Analysis (SM)
+
+== Versions
+1.0 - Nov 28, 2019 - Initial Release
+

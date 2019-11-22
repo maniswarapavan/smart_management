@@ -1,0 +1,25 @@
+
+:scrollbar:
+:data-uri:
+
+== Inventories
+
+* Host inventory defines hosts managed by Ansible
+* Hosts may belong to groups
+** Typically used to identify host's role in datacenter
+** Host can be member of more than one group
+
+* Two ways to define host inventories:
+** _Static_ host inventory defined by text file
+** _Dynamic_ host inventory generated from outside providers
+
+
+ifdef::showscript[]
+
+Transcript:
+
+A host inventory defines the hosts that Ansible manages. Hosts may belong to groups that are typically used to identify the host's role in the datacenter. A host can be a member of more than one group.
+
+There are two ways in which host inventories can be defined. A _static_ host inventory is defined by a text file, while a _dynamic_ host inventory is generated from outside providers.
+
+endif::showscript[]

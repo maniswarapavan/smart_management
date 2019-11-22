@@ -1,0 +1,30 @@
+:scrollbar:
+:data-uri:
+
+
+
+== Course Navigation Tips
+
+* To receive credit for completing a module, you must click the *Complete Module* button on the Module Completion slide:
++
+image::images/module_complete.png[]
+
+** To confirm that you received credit for completing a module, look for a check mark next to the module name on the left side of the screen
+* After exiting the course, close the course's tab in your browser 
+** If your course session expires before closing the course's browser tab, your progress in the course will be lost
+* To display the audio transcript, press `S`
+** If the transcript does not display, click the slide and press `S` again
+
+ifdef::showscript[]
+
+Transcript:
+
+Here are a few tips to help you navigate through this course:
+
+To receive credit for completing a module, you must click the *Module Complete* button on the Module Completion slide. Once you receive credit for completing a module, the x next to the module name on the left side of the screen  changes to a check mark.
+
+After exiting the course, you must close the course's tab in your browser. If your course session expires before you close the course's browser tab, then your progress in the course will be lost.
+
+To display the audio transcript, press the "S" key.
+
+endif::showscript[]

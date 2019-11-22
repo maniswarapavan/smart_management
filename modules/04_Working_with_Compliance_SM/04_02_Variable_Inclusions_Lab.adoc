@@ -1,0 +1,316 @@
+:scrollbar:
+:data-uri:
+:linkattrs:
+:toc2:
+:labname: Variable Inclusion
+:show_solution: false
+
+
+== {labname} Lab
+
+In this lab, you manage inclusions in Ansible Playbooks. You create a task file, variable file, and playbook. The variable file defines, in YAML format, a variable used by the playbook. The task file defines the required tasks and includes variables that are passed later on as arguments.
+
+.Goal
+* Create an Ansible Playbook that uses inclusions
+
+:numbered:
+
+
+== Connect to Environment
+
+. Set some useful environment variables:
++
+[source,sh]
+----
+[laptop ]$ export GUID=<"GUID from email">
+[laptop ]$ export MYKEY=<~/.ssh/your_key.pem>
+[laptop ]$ export MYUSER=<username-company.com>
+----
++
+.Example
+[source,sh]
+----
+[laptop ]$ export GUID=e4gh
+[laptop ]$ export MYKEY=~/.ssh/psrivatkey
+[laptop ]$ export MYUSER=psrivast-redhat.com
+----
+
+. Connect to the `bastion` host with your OPENTLC ID and private key:
++
+[source,sh]
+----
+[laptop ]$ ssh -i ${MYKEY} ${MYUSER}@bastion.${GUID}.example.opentlc.com
+----
+
+. Log in as the `devops` user and change to the `~/dev-vars-playbook` directory:
++
+[source,sh]
+----
+[user-company.com@bastion ~]$ sudo -i
+[root@bastion ~]# su - devops
+[devops@bastion ~]$ cd ~/dev-vars-playbook
+[devops@bastion dev-vars-playbook]$
+----
+
+
+== Create Task File
+
+. Create a `tasks` directory under `~/ansible_implementation`.
+. In the `tasks` directory, create the `environment.yml` task file.
+. In the playbook, define the two tasks that install and start the web server.
+. Use the `package` variable for the package name, `service` for the service name, and `svc_state` for the service state.
+
+.Playbook Solution
+[source,sh]
+----
+[devops@bastion]$ cd ~/ansible_implementation
+[devops@bastion ansible_implementation]$ mkdir tasks
+[devops@bastion ansible_implementation]$ cd tasks
+[devops@bastion tasks]$ cat << EOF > environment.yml
+  - name: Install the {{ package }} package
+    yum:
+      name: "{{ package }}"
+      state: latest
+  - name: Start the {{ service }} service
+    service:
+      name: "{{ service }}"
+      state: "{{ svc_state }}"
+EOF
+----
+
+[start=5]
+
+. Change back to the main project directory:
++
+[source,sh]
+----
+[devops@bastion tasks]$ cd ..
+[devops@bastion ansible_implementation]$
+----
+
+
+== Create Variable File
+
+. Create and change to the `vars` directory:
++
+[source,sh]
+----
+[devops@bastion ansible_implementation]$ mkdir vars
+[devops@bastion ansible_implementation]$ cd vars
+[devops@bastion vars]$
+----
+
+. Create the `variables.yml` variable file with the following content:
++
+[source,sh]
+----
+[devops@bastion vars]$ cat << EOF > variables.yml
+firewall_pkg: firewalld
+EOF
+----
+* The file defines the `firewall_pkg` variable in YAML format.
+
+. Change back to the main project directory:
++
+[source,sh]
+----
+[devops@bastion vars]$ cd ..
+[devops@bastion ansible_implementation]$
+----
+
+
+== Create Main Playbook
+
+In this section, you create and edit the main playbook, `main_playbook.yml`, which imports the tasks and variables, and installs and configures the `firewalld` service.
+
+. Create the playbook `main_playbook.yml`.
+
+. Add the `webservers` host group and define a `rule` variable with a value of `http`.
+. Define the first task with the `include_vars` module and the `variables.yml` variable file.
+* The `include_vars` module imports extra variables that are used by other tasks in the playbook.
+
+. Define a task that uses the `import_tasks` module to include the base `environment.yml` playbook:
+.. Because the three defined variables are used in the base playbook, but are not defined, include a `vars` block.
+.. Set three variables in the `vars` section:
+* `package`: `httpd`
+* `service`: `httpd`
+* `svc_state`: `started`
+
+. Create a task that installs the `firewalld` package using the `firewall_pkg` variable.
+
+. Create a task that starts the `firewalld` service.
+
+. Create a task that adds a firewall rule for the HTTP service using the `rule` variable.
+
+. Add a task that creates the `index.html` file for the web server using the `copy` module:
+.. Create the file with the Ansible `ansible_fqdn` fact, which returns the fully qualified domain name.
+.. Include a time stamp in the file using an Ansible fact.
+
+.Playbook Solution
+[source,sh]
+----
+[devops@bastion ansible_implementation]$ cat << EOF > main_playbook.yml
+- hosts: webservers
+  become: yes
+  vars:
+    rule: http
+  tasks:
+    - name: Include the variables from the YAML file
+      include_vars: vars/variables.yml
+
+    - name: Include the environment file and set the variables
+      import_tasks: tasks/environment.yml
+      vars:
+        package: httpd
+        service: httpd
+        svc_state: started
+
+    - name: Install the firewall
+      yum:
+        name: "{{ firewall_pkg }}"
+        state: latest
+
+    - name: Start the firewall
+      service:
+        name: firewalld
+        state: started
+        enabled: true
+
+    - name: Open the port for {{ rule }}
+      firewalld:
+        service: "{{ rule }}"
+        immediate: true
+        permanent: true
+        state: enabled
+
+    - name: Create index.html
+      copy:
+        content: "{{ ansible_fqdn }} has been customized using Ansible on the {{ ansible_date_time.date }}\n"
+        dest: /var/www/html/index.html
+EOF
+
+----
+
+[start=9]
+
+. Verify the syntax of the `main_playbook.yml` playbook:
++
+[source,sh]
+----
+[devops@bastion ansible_implementation]$ ansible-playbook --syntax-check main_playbook.yml
+----
++
+.Sample Output
+[source,texinfo]
+----
+playbook: main_playbook.yml
+[devops@bastion ansible_implementation]$
+----
+
+
+== Run Playbook
+
+. Run the playbook and examine the output:
++
+[source,sh]
+----
+[devops@bastion ansible_implementation]$ ansible-playbook main_playbook.yml
+----
++
+.Sample Output
+[source,texinfo]
+----
+PLAY [webservers] *********************************************************************************************************************************************
+
+TASK [Gathering Facts] ****************************************************************************************************************************************
+ok: [app1.${GUID}.internal]
+ok: [app2.${GUID}.internal]
+
+TASK [Include the variables from the YAML file] ***************************************************************************************************************
+ok: [app1.${GUID}.internal]
+ok: [app2.${GUID}.internal]
+
+TASK [Install the httpd package] ******************************************************************************************************************************
+changed: [app1.${GUID}.internal]
+changed: [app2.${GUID}.internal]
+
+TASK [Start the httpd service] ********************************************************************************************************************************
+changed: [app1.${GUID}.internal]
+changed: [app2.${GUID}.internal]
+
+TASK [Install the firewall] ***********************************************************************************************************************************
+ok: [app1.${GUID}.internal]
+ok: [app2.${GUID}.internal]
+
+TASK [Start the firewall] *************************************************************************************************************************************
+ok: [app2.${GUID}.internal]
+ok: [app1.${GUID}.internal]
+
+TASK [Open the port for http] *********************************************************************************************************************************
+ok: [app2.${GUID}.internal]
+ok: [app1.${GUID}.internal]
+
+TASK [Create index.html] **************************************************************************************************************************************
+changed: [app1.${GUID}.internal]
+changed: [app2.${GUID}.internal]
+
+PLAY RECAP ****************************************************************************************************************************************************
+app1.${GUID}.internal         : ok=8    changed=3    unreachable=0    failed=0
+app2.${GUID}.internal         : ok=8    changed=3    unreachable=0    failed=0
+----
+* Note that Ansible starts by including the `environment.yml` playbook and running its tasks, then continues to execute the tasks defined in the main playbook.
+
+. Confirm that the `app1` web server is reachable from `bastion`:
++
+[source,sh]
+----
+devops@bastion ansible_implementation]$ export GUID=`hostname | awk -F"." '{print $2}'`
+[devops@bastion ansible_implementation]$ curl http://app1.${GUID}.internal
+----
++
+.Sample Output
+[source,texinfo]
+----
+ip-192-199-0-96.ec2.internal has been customized using Ansible on the 2018-08-21
+----
++
+. Confirm that the `app2` web server is reachable from `bastion`:
++
+[source,sh]
+----
+[devops@bastion ansible_implementation]$ curl http://app2.${GUID}.internal
+----
++
+.Sample Output
+[source,texinfo]
+----
+ip-192-199-0-96.ec2.internal has been customized using Ansible on the 2018-08-21
+----
+* You see this output because the `index.html` file was created.
+
+
+== Evaluate Your Progress
+
+. Grade your work:
++
+[source,sh]
+----
+[devops@bastion ansible_implementation]$ cd ~/ansible_implementation_grading/
+[devops@bastion ansible_implementation_grading]$ export GUID=`hostname | awk -F"." '{print $2}'`
+[devops@bastion ansible_implementation_grading]$ ansible-playbook lab-4.2-grade.yml -e GUID=${GUID}
+----
+
+. Correct any reported failures.
+
+. Rerun the script until you have no failures.
+
+
+== Clean Up Environment
+
+. Run a playbook to clean up the lab environment:
++
+[source,sh]
+----
+[devops@bastion ansible_implementation_grading]$ export GUID=`hostname | awk -F"." '{print $2}'`
+[devops@bastion ansible_implementation_grading]$ ansible-playbook lab-4.2-cleanup.yml -e GUID=${GUID}
+----

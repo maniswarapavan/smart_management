@@ -1,0 +1,372 @@
+:scrollbar:
+:data-uri:
+:linkattrs:
+:toc2:
+:labname: Static Inventory and Playbook
+:show_solution: false
+
+
+== {labname} Lab
+
+In this lab, you set up and configure a static inventory to group managed remote hosts according to their role. Then you test the connection to the remote hosts using a host group. Finally, you write a playbook to set up an Apache web server with static content.
+
+.Goals
+* Configure a static inventory to add managed hosts in groups
+* Write a playbook to check connectivity using a host group
+* Set up a static inventory to use inventory variables
+* Write a playbook to deploy an Apache web server to the hosts in the `webservers` host group
+
+:numbered:
+
+
+[[labexercises]]
+== Connect to Environment
+
+. Set some useful environment variables:
++
+[source,sh]
+----
+[laptop ]$ export GUID=<"GUID from email">
+[laptop ]$ export MYKEY=<~/.ssh/your_key.pem>
+[laptop ]$ export MYUSER=<username-company.com>
+----
++
+.Example
+[source,sh]
+----
+[laptop ]$ export GUID=e4gh
+[laptop ]$ export MYKEY=~/.ssh/psrivatkey
+[laptop ]$ export MYUSER=psrivast-redhat.com
+----
+
+. Connect to the `bastion` host with your OPENTLC ID and private key:
++
+[source,sh]
+----
+[laptop ]$ ssh -i ${MYKEY} ${MYUSER}@bastion.${GUID}.example.opentlc.com
+----
+
+== Configure Static Inventory to Add Host Groups
+
+In this section, you configure a static inventory and add managed hosts to the `hosts` file, grouped by their roles:
+
+[cols="2,2,2",options=header]
+|===
+| Managed Host | Host Group Name | Role
+| `frontend1.${GUID}.internal` | `lb` | Load balancer server
+| `appdb1.${GUID}.internal` | `db` | Database server
+| `app1.${GUID}.internal` | `webservers` | Apache web server
+| `app2.${GUID}.internal` | `webservers` | Apache web server
+|===
+
+. Append the host groups to the end of the `/home/devops/ansible_implementation/hosts` static inventory file:
++
+[source,sh]
+----
+[user-company.com@bastion ~]$ sudo -i
+[root@bastion ~]# su - devops
+[devops@bastion ~]$ export GUID=`hostname | awk -F"." '{print $2}'`
+[devops@bastion ~]$ cd ~/ansible_implementation
+[devops@bastion ansible_implementation]$ cat << EOF >> /home/devops/ansible_implementation/hosts
+[lb]
+frontend1.${GUID}.internal
+
+[webservers]
+app1.${GUID}.internal
+app2.${GUID}.internal
+
+[db]
+appdb1.${GUID}.internal
+
+EOF
+----
+
+. Verify the contents of the `hosts` file:
++
+[source,sh]
+----
+[devops@bastion ansible_implementation]$ cat hosts
+----
++
+.Sample Output
+[source,texinfo]
+----
+frontend1.${GUID}.internal
+appdb1.${GUID}.internal
+app1.${GUID}.internal
+support1.${GUID}.internal
+app2.${GUID}.internal
+[lb]
+frontend1.${GUID}.internal
+
+[webservers]
+app1.${GUID}.internal
+app2.${GUID}.internal
+
+[db]
+appdb1.${GUID}.internal
+----
+
+
+== Write Playbook to Verify Connectivity
+
+In this section, you write a playbook that uses the `ping` module to verify the connection to the managed hosts in the `webservers` host group.
+
+. As the `devops` user, write a playbook to check connectivity to `webservers`:
++
+[source,sh]
+----
+[devops@bastion ansible_implementation]$ cat << EOF > check_webservers.yml
+- hosts: webservers
+  tasks:
+  - name: Check connectivity
+    ping:
+EOF
+----
+
+. Use `--syntax-check` to verify the syntax of your playbook:
++
+[source,sh]
+----
+[devops@bastion ansible_implementation]$ ansible-playbook --syntax-check check_webservers.yml -u devops --private-key=~/.ssh/id_rsa
+----
++
+.Sample Output
+[source,texinfo]
+----
+playbook: check_webserver.yml
+----
+
+. Use `--check` to perform a dry run of the playbook:
++
+[source,sh]
+----
+[devops@bastion ansible_implementation]$ ansible-playbook --check check_webservers.yml -u devops --private-key=~/.ssh/id_rsa
+----
++
+.Sample Output
+[source,texinfo]
+----
+PLAY [webservers] **********************************************************************************************************************
+
+TASK [Gathering Facts] *****************************************************************************************************************
+ok: [app1.${GUID}.internal]
+ok: [app2.${GUID}.internal]
+
+TASK [Check connectivity] **************************************************************************************************************
+ok: [app1.${GUID}.internal]
+ok: [app2.${GUID}.internal]
+
+PLAY RECAP *****************************************************************************************************************************
+app1.${GUID}.internal         : ok=2    changed=0    unreachable=0    failed=0
+app2.${GUID}.internal         : ok=2    changed=0    unreachable=0    failed=0
+----
+
+. Run the playbook:
++
+[source,sh]
+----
+[devops@bastion ansible_implementation]$ ansible-playbook check_webservers.yml -u devops --private-key=~/.ssh/id_rsa
+----
++
+.Sample Output
+[source,texinfo]
+----
+PLAY [webservers] **********************************************************************************************************************
+
+TASK [Gathering Facts] *****************************************************************************************************************
+ok: [app1.${GUID}.internal]
+ok: [app2.${GUID}.internal]
+
+TASK [Check connectivity] **************************************************************************************************************
+ok: [app1.${GUID}.internal]
+ok: [app2.${GUID}.internal]
+
+PLAY RECAP *****************************************************************************************************************************
+app1.${GUID}.internal         : ok=2    changed=0    unreachable=0    failed=0
+app2.${GUID}.internal         : ok=2    changed=0    unreachable=0    failed=0
+----
+* Note that the play in the playbook is running on `app1` and `app2` as both of the systems are member of the `webservers` host group.
+
+
+== Set Up Static Inventory to Use Inventory Variables
+
+In this section, you configure the `hosts` inventory file to use an inventory variable so that you do not have to include `-u` and `--private-key` options to specify the remote user and private key.
+
+. Append the inventory to the `hosts` file:
++
+[source,sh]
+----
+devops@bastion ansible_implementation]$ cat << EOF >> /home/devops/ansible_implementation/hosts
+[webservers:vars]
+ansible_user = devops
+ansible_ssh_private_key_file = /home/devops/.ssh/id_rsa
+EOF
+----
+
+. Verify the contents of the `hosts` file:
++
+[source,sh]
+----
+[devops@bastion ansible_implementation]$ cat hosts
+----
++
+.Sample Output
+[source,texinfo]
+----
+Output Omitted....
+
+[webservers]
+app1.${GUID}.internal
+app2.${GUID}.internal
+
+[db]
+appdb1.${GUID}.internal
+[webservers:vars]
+ansible_user = devops
+ansible_ssh_private_key_file = /home/devops/.ssh/id_rsa
+----
+
+. Run the `check_webservers.yml` playbook again without specifying any options:
++
+[source,sh]
+----
+[devops@bastion ansible_implementation]$ ansible-playbook check_webservers.yml
+----
++
+.Sample Output
+[source,texinfo]
+----
+PLAY [webservers] **********************************************************************************************************************
+
+TASK [Gathering Facts] *****************************************************************************************************************
+ok: [app2.${GUID}.internal]
+ok: [app1.${GUID}.internal]
+
+TASK [Check connectivity] **************************************************************************************************************
+ok: [app2.${GUID}.internal]
+ok: [app1.${GUID}.internal]
+
+PLAY RECAP *****************************************************************************************************************************
+app1.${GUID}.internal         : ok=2    changed=0    unreachable=0    failed=0
+app2.${GUID}.internal         : ok=2    changed=0    unreachable=0    failed=0
+
+----
+
+
+== Write, Deploy, and Test Playbook
+
+In this section, you write a playbook to deploy an Apache web server on the `webservers` host group using the `yum`, `service`, and `copy` modules.
+
+. Write a playbook to deploy the Apache (HTTPD) web server--but this time, rather than specifying the `--become` or `-b` option for privileged escalation, use `become: yes` in your playbook:
++
+[source,sh]
+----
+[devops@bastion ansible_implementation]$ cat << EOF > /home/devops/ansible_implementation/deploy_apache.yml
+- hosts: webservers
+  become: yes
+  tasks:
+  - name: Install httpd package
+    yum:
+      name: httpd
+      state: latest
+  - name: Enable and start httpd service
+    service:
+       name: httpd
+       state: started
+       enabled: yes
+  - name: Create index.html file for hosting static content
+    copy:
+      content: "Hoorraaayyy!!! My first playbook ran successfully"
+      dest: /var/www/html/index.html
+EOF
+
+----
+
+. Run your playbook:
++
+[source,sh]
+----
+[devops@bastion ansible_implementation]$ ansible-playbook deploy_apache.yml
+----
++
+.Sample Output
+[source,texinfo]
+----
+PLAY [webservers] **********************************************************************************************************************
+
+TASK [Gathering Facts] *****************************************************************************************************************
+ok: [app1.${GUID}.internal]
+ok: [app2.${GUID}.internal]
+
+TASK [Install httpd package] ***********************************************************************************************************
+changed: [app1.${GUID}.internal]
+changed: [app2.${GUID}.internal]
+
+TASK [Enable and start httpd service] **************************************************************************************************
+changed: [app2.${GUID}.internal]
+changed: [app1.${GUID}.internal]
+
+TASK [Create index.html file for hosting static content] *******************************************************************************
+changed: [app2.${GUID}.internal]
+changed: [app1.${GUID}.internal]
+
+PLAY RECAP *****************************************************************************************************************************
+app1.${GUID}.internal         : ok=4    changed=3    unreachable=0    failed=0
+app2.${GUID}.internal         : ok=4    changed=3    unreachable=0    failed=0
+
+----
+
+. Verify that you are able to access the web page on the `app1` host:
++
+[source,sh]
+----
+[devops@bastion ansible_implementation]$ curl http://app1.${GUID}.internal
+----
++
+.Sample Output
+[source,texinfo]
+----
+Hoorraaayyy!!! My first playbook ran successfully
+----
+
+. Verify that you are able to access the web page on the `app2` host:
++
+[source,sh]
+----
+[devops@bastion ansible_implementation]$ curl http://app2.${GUID}.internal
+----
++
+.Sample Output
+[source,texinfo]
+----
+Hoorraaayyy!!! My first playbook ran successfully
+----
+
+
+== Evaluate Your Progress
+
+. Grade your work:
++
+[source,sh]
+----
+[devops@bastion ansible_implementation]$ cd ~/ansible_implementation_grading/
+[devops@bastion ansible_implementation_grading]$ export GUID=`hostname | awk -F"." '{print $2}'`
+[devops@bastion ansible_implementation_grading]$ ansible-playbook lab-3.1-grade.yml -e GUID=${GUID}
+----
+
+. Correct any reported failures.
+
+. Rerun the script until you see no failures.
+
+
+== Clean Up Environment
+
+. Run a playbook to perform the cleanup:
+
+[source,sh]
+----
+[devops@bastion ansible_implementation]$ cd ~/ansible_implementation_grading/
+[devops@bastion ansible_implementation_grading]$ export GUID=`hostname | awk -F"." '{print $2}'`
+[devops@bastion ansible_implementation_grading]$ ansible-playbook lab-3.1-cleanup.yml -e GUID=${GUID}
+----

@@ -1,0 +1,39 @@
+
+:scrollbar:
+:data-uri:
+
+== Topics
+
+* Static Host Inventory
+* Dynamic Host Inventory
+* YAML Overview
+* YAML in Playbooks
+* Playbooks and Ad Hoc Commands
+* Playbook Creation
+* Playbook Formatting
+* Multiple Plays
+* Playbook Execution
+* Facts
+* Custom Facts
+* Cached Facts
+
+ifdef::showscript[]
+
+Transcript:
+
+In this module, you learn the following:
+
+* How host inventories are used to define hosts
+* The difference between static and dynamic host inventories
+* The fundamentals of YAML file syntax and how files are structured using space indentation to represent data hierarchy
+* How to use YAML in playbooks
+* The differences between using playbooks and ad hoc commands
+* How to write and format playbooks
+* How to use multiple plays in a playbook
+* How to use the `ansible-playbook` command to verify playbook syntax and execute playbooks
+* How facts are used and called from playbooks
+* How to create custom facts and use them in playbooks
+* How to use cached facts
+
+endif::showscript[]
+

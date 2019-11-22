@@ -1,0 +1,36 @@
+
+:scrollbar:
+:data-uri:
+
+== Overview
+
+.Ansible Limitations
+
+* Cannot audit changes made by other users on system
+** Example: Cannot determine who made change to a file
+* Does not perform initial minimal installation of system
+** Start with minimal installation via Kickstart or base cloud starter image
+** Then use Ansible to add packages and do configuration
+
+
+* Does not monitor configuration drift
+** Can remediate it
+* Does not track changes made to files on system
+** Does not track which user or process made changes
+** To track changes, use version control system or Linux^(R)^ Auditing System
+
+ifdef::showscript[]
+
+Transcript:
+
+There are several things Ansible cannot do.
+
+Ansible cannot audit changes made locally by other users on a system--for example, to determine who made a change to a file.
+
+Ansible can add packages to an installation, but it does not perform the initial minimal installation of the system. A system can start with a minimal installation, either via Kickstart or a base cloud starter image, then use Ansible for further configuration.
+
+Although Ansible can remediate configuration drift, it does not monitor for it.
+
+Ansible does not track the changes made to files on the system, nor does it track the users or processes that made those changes. These types of changes are best tracked with a version control system or the Linux Auditing System.
+
+endif::showscript[]

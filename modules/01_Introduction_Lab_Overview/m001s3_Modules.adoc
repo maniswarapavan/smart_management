@@ -1,0 +1,23 @@
+
+:scrollbar:
+:data-uri:
+
+== Modules
+
+* Ansible Overview
+
+* Your First Playbook
+
+* Loops, Variables, and Return Values
+
+* Roles
+
+* Ansible Vault
+
+ifdef::showscript[]
+
+Transcript:
+
+The modules in Part 1 of the Red Hat Ansible Engine Implementation course are listed here.
+
+endif::showscript[]

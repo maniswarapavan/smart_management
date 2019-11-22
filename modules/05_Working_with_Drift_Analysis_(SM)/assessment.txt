@@ -1,0 +1,73 @@
+QUESTIONBANKCODE|QUESTIONCODE|QUESTIONTYPE|QUESTIONTEXT|QUESTIONTEXTFORMAT|QUESTIONFEEDBACK|OPTION|RIGHTOPTION|OPTIONFEEDBACK|ISCORRECT|OPTIONWEIGHT|ISCASESENSITIVE|RANDOMIZEOPTIONS|STATUS
+ANSIBLEIMPL|ANSIBLEIMPL0501|1|What executes before roles in a playbook?|||pre_tasks|||1|100|||
+ANSIBLEIMPL|ANSIBLEIMPL0501|1|What executes before roles in a playbook?|||post_tasks|||0|0|||
+ANSIBLEIMPL|ANSIBLEIMPL0501|1|What executes before roles in a playbook?|||tasks|||0|0|||
+ANSIBLEIMPL|ANSIBLEIMPL0501|1|What executes before roles in a playbook?|||includes|||0|0|||
+ANSIBLEIMPL|ANSIBLEIMPL0502|1|When do handlers execute?|||Once, at the end of the task|||0|0|||
+ANSIBLEIMPL|ANSIBLEIMPL0502|1|When do handlers execute?|||Once, at the end of the playbook|||0|0|||
+ANSIBLEIMPL|ANSIBLEIMPL0502|1|When do handlers execute?|||Once, at the end of the play|||1|100|||
+ANSIBLEIMPL|ANSIBLEIMPL0502|1|When do handlers execute?|||Once, after includes run|||0|0|||
+ANSIBLEIMPL|ANSIBLEIMPL0503|1|What are handlers most often used for?|||Restarting services|||1|100|||
+ANSIBLEIMPL|ANSIBLEIMPL0503|1|What are handlers most often used for?|||Adding hosts to inventory with add_host|||0|0|||
+ANSIBLEIMPL|ANSIBLEIMPL0503|1|What are handlers most often used for?|||Specifying host variables|||0|0|||
+ANSIBLEIMPL|ANSIBLEIMPL0503|1|What are handlers most often used for?|||Gathering facts|||0|0|||
+ANSIBLEIMPL|ANSIBLEIMPL0504|1|Which of the following describes how roles are used?|||Roles are a way of automatically loading certain vars_files, tasks, and handlers|||1|100|||
+ANSIBLEIMPL|ANSIBLEIMPL0504|1|Which of the following describes how roles are used?|||Roles are many logical functions for a single virtual server in your inventory|||0|0|||
+ANSIBLEIMPL|ANSIBLEIMPL0504|1|Which of the following describes how roles are used?|||Roles provide a way to associate different playbooks|||0|0|||
+ANSIBLEIMPL|ANSIBLEIMPL0504|1|Which of the following describes how roles are used?|||Roles concatenate multiple inventories|||0|0|||
+ANSIBLEIMPL|ANSIBLEIMPL0505|1|Under a role's tasks directory, main.yml should include which of the following?|||A YAML list of dependent roles|||0|0|||
+ANSIBLEIMPL|ANSIBLEIMPL0505|1|Under a role's tasks directory, main.yml should include which of the following?|||A hosts declaration|||0|0|||
+ANSIBLEIMPL|ANSIBLEIMPL0505|1|Under a role's tasks directory, main.yml should include which of the following?|||A YAML dictionary of variables|||0|0|||
+ANSIBLEIMPL|ANSIBLEIMPL0505|1|Under a role's tasks directory, main.yml should include which of the following?|||A YAML list of tasks|||1|100|||
+ANSIBLEIMPL|ANSIBLEIMPL0506|1|Which of the following directories must be included in roles that are used by a playbook?|||tasks|||1|100|||
+ANSIBLEIMPL|ANSIBLEIMPL0506|1|Which of the following directories must be included in roles that are used by a playbook?|||vars|||0|0|||
+ANSIBLEIMPL|ANSIBLEIMPL0506|1|Which of the following directories must be included in roles that are used by a playbook?|||meta|||0|0|||
+ANSIBLEIMPL|ANSIBLEIMPL0506|1|Which of the following directories must be included in roles that are used by a playbook?|||defaults|||0|0|||
+ANSIBLEIMPL|ANSIBLEIMPL0507|1|What is the default sequence for role and playbook task execution?|||Role tasks execute before playbook tasks|||1|100|||
+ANSIBLEIMPL|ANSIBLEIMPL0507|1|What is the default sequence for role and playbook task execution?|||Role tasks execute as post_tasks for playbooks|||0|0|||
+ANSIBLEIMPL|ANSIBLEIMPL0507|1|What is the default sequence for role and playbook task execution?|||Playbook tasks execute as pre_tasks before applying role tasks|||0|0|||
+ANSIBLEIMPL|ANSIBLEIMPL0507|1|What is the default sequence for role and playbook task execution?|||There is no default and tasks execute in any order they appear|||0|0|||
+ANSIBLEIMPL|ANSIBLEIMPL0508|1|To configure a specific path for Ansible to look for roles, you can set the following in ansible.cfg:|||roles_location|||0|0|||
+ANSIBLEIMPL|ANSIBLEIMPL0508|1|To configure a specific path for Ansible to look for roles, you can set the following in ansible.cfg:|||roles_path|||1|100|||
+ANSIBLEIMPL|ANSIBLEIMPL0508|1|To configure a specific path for Ansible to look for roles, you can set the following in ansible.cfg:|||roles_default|||0|0|||
+ANSIBLEIMPL|ANSIBLEIMPL0508|1|To configure a specific path for Ansible to look for roles, you can set the following in ansible.cfg:|||roles_dir|||0|0|||
+ANSIBLEIMPL|ANSIBLEIMPL0509|1|What can the meta directory set?|||Version of the playbook|||0|0|||
+ANSIBLEIMPL|ANSIBLEIMPL0509|1|What can the meta directory set?|||Multiple inventories|||0|0|||
+ANSIBLEIMPL|ANSIBLEIMPL0509|1|What can the meta directory set?|||Dependencies on other roles|||1|100|||
+ANSIBLEIMPL|ANSIBLEIMPL0509|1|What can the meta directory set?|||remote_user|||0|0|||
+ANSIBLEIMPL|ANSIBLEIMPL0513|5|Variables that are declared in a task in the apache role can be used by the web role, if web is executed after apache.|||TRUE|||1|100|||
+ANSIBLEIMPL|ANSIBLEIMPL0513|5|Variables that are declared in a task in the apache role can be used by the web role, if web is executed after apache.|||FALSE|||0|0|||
+ANSIBLEIMPL|ANSIBLEIMPL0514|1|If roles/rolename/vars/main.yml exists, then the following is true:|||The variables in the 'defaults' directory are not evaluated|||0|0|||
+ANSIBLEIMPL|ANSIBLEIMPL0514|1|If roles/rolename/vars/main.yml exists, then the following is true:|||Those variables overrule hostvars|||0|0|||
+ANSIBLEIMPL|ANSIBLEIMPL0514|1|If roles/rolename/vars/main.yml exists, then the following is true:|||Those variables overrule defaults/main.yml in that role|||1|100|||
+ANSIBLEIMPL|ANSIBLEIMPL0514|1|If roles/rolename/vars/main.yml exists, then the following is true:|||They behave the same as using extra vars on the command line|||0|0|||
+ANSIBLEIMPL|ANSIBLEIMPL0515|1|What is the defined process for creating and using a role?|||Ansible automatically creates and uses a role if it is defined in the YAML file|||0|0|||
+ANSIBLEIMPL|ANSIBLEIMPL0515|1|What is the defined process for creating and using a role?|||Roles are downloaded from a repository and used only if needed|||0|0|||
+ANSIBLEIMPL|ANSIBLEIMPL0515|1|What is the defined process for creating and using a role?|||Roles are created and used in an ad hoc manner|||0|0|||
+ANSIBLEIMPL|ANSIBLEIMPL0515|1|What is the defined process for creating and using a role?|||Create the role directory structure; define the role content; use the role in a playbook|||1|100|||
+ANSIBLEIMPL|ANSIBLEIMPL0516|5|Using role defaults is least important in terms of variable precedence.|||TRUE|||1|100|||
+ANSIBLEIMPL|ANSIBLEIMPL0516|5|Using role defaults is least important in terms of variable precedence.|||FALSE|||0|0|||
+ANSIBLEIMPL|ANSIBLEIMPL0517|1|Which best describes the dependency behavior of a role in a playbook?|||A role is listed multiple times, if roles_path is set accordingly|||0|0|||
+ANSIBLEIMPL|ANSIBLEIMPL0517|1|Which best describes the dependency behavior of a role in a playbook?|||A role can run multiple times as a dependency if allow_duplicates is set to "true" or "yes"|||1|100|||
+ANSIBLEIMPL|ANSIBLEIMPL0517|1|Which best describes the dependency behavior of a role in a playbook?|||Roles can be applied only once|||0|0|||
+ANSIBLEIMPL|ANSIBLEIMPL0517|1|Which best describes the dependency behavior of a role in a playbook?|||A role can be called multiple times if you intend to call that role both before and after the execution of the current role|||0|0|||
+ANSIBLEIMPL|ANSIBLEIMPL0518|1|In a dependencies list, which entry would call the "apache" role with the variable "vhosts=true?"|||- { role: apache, when vhosts == true }|||0|0|||
+ANSIBLEIMPL|ANSIBLEIMPL0518|1|In a dependencies list, which entry would call the "apache" role with the variable "vhosts=true?"|||- { role: apache, set_var: "{{ vhosts &#124; stdout.true }}" }|||0|0|||
+ANSIBLEIMPL|ANSIBLEIMPL0518|1|In a dependencies list, which entry would call the "apache" role with the variable "vhosts=true?"|||- { role: apache, vhosts: true }|||1|100|||
+ANSIBLEIMPL|ANSIBLEIMPL0518|1|In a dependencies list, which entry would call the "apache" role with the variable "vhosts=true?"|||- { role: apache, when vhosts is defined }|||0|0|||
+ANSIBLEIMPL|ANSIBLEIMPL0519|1|Under which conditions can Ansible Galaxy be used to install roles?|||From the Ansible community to your playbook directories|||1|100|||
+ANSIBLEIMPL|ANSIBLEIMPL0519|1|Under which conditions can Ansible Galaxy be used to install roles?|||To /dev/null|||0|0|||
+ANSIBLEIMPL|ANSIBLEIMPL0519|1|Under which conditions can Ansible Galaxy be used to install roles?|||To target machines so that ansible-agent may run them|||0|0|||
+ANSIBLEIMPL|ANSIBLEIMPL0519|1|Under which conditions can Ansible Galaxy be used to install roles?|||From Mercurial|||0|0|||
+ANSIBLEIMPL|ANSIBLEIMPL0520|1|Under which condition can you install multiple roles from Galaxy using a file with a list of role names?|||Only if role_path is set|||0|0|||
+ANSIBLEIMPL|ANSIBLEIMPL0520|1|Under which condition can you install multiple roles from Galaxy using a file with a list of role names?|||Only if the file contains role names in the "username.rolename" format|||1|100|||
+ANSIBLEIMPL|ANSIBLEIMPL0520|1|Under which condition can you install multiple roles from Galaxy using a file with a list of role names?|||Only as the ansible user|||0|0|||
+ANSIBLEIMPL|ANSIBLEIMPL0520|1|Under which condition can you install multiple roles from Galaxy using a file with a list of role names?|||Only if the file is in json format|||0|0|||
+ANSIBLEIMPL|ANSIBLEIMPL0521|1|What occurs when you execute the  "ansible-galaxy init newrole1 -p /etc/ansible/roles" command?|||It installs a role by the name "newrole1" in your playbook's roles directory|||0|0|||
+ANSIBLEIMPL|ANSIBLEIMPL0521|1|What occurs when you execute the  "ansible-galaxy init newrole1 -p /etc/ansible/roles" command?|||It installs a role by the name of "newrole1" at /etc/ansible/roles|||1|100|||
+ANSIBLEIMPL|ANSIBLEIMPL0521|1|What occurs when you execute the  "ansible-galaxy init newrole1 -p /etc/ansible/roles" command?|||It installs a role by the name of "newrole1" in ansible.cfg's roles_path value|||0|0|||
+ANSIBLEIMPL|ANSIBLEIMPL0521|1|What occurs when you execute the  "ansible-galaxy init newrole1 -p /etc/ansible/roles" command?|||It prepopulates the  "newrole1" role with task lists included at /etc/ansible/roles|||0|0|||
+ANSIBLEIMPL|ANSIBLEIMPL0522|1|What is Ansible Galaxy?|||An Ansible module used to control various cloud providers|||0|0|||
+ANSIBLEIMPL|ANSIBLEIMPL0522|1|What is Ansible Galaxy?|||A collection of community contributed roles|||1|100|||
+ANSIBLEIMPL|ANSIBLEIMPL0522|1|What is Ansible Galaxy?|||A collection of Ansible supported roles|||0|0|||
+ANSIBLEIMPL|ANSIBLEIMPL0522|1|What is Ansible Galaxy?|||A collection of inventory plug-ins|||0|0|||

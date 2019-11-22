@@ -1,0 +1,31 @@
+
+:scrollbar:
+:data-uri:
+
+== Overview
+
+* *Ansible:* Open source configuration management and orchestration utility
+* Automates and standardizes configuration of remote hosts and virtual machines
+* Coordinates launch and shutdown of multitiered applications
+** Performs rolling updates of multiple systems with zero downtime
+* Originally written by Michael DeHaan
+** Creator of Cobbler provisioning application
+* System administrators find it simple to use
+* Developers can learn it easily
+** Built on Python
+* Supported by DevOps tools such as Vagrant and Jenkins
+
+ifdef::showscript[]
+
+Transcript:
+
+Ansible is an open source configuration management and orchestration utility.
+It can automate and standardize the configuration of remote hosts and virtual machines.
+Its orchestration functionality allows Ansible to coordinate the launch and graceful shutdown of multitiered applications.
+Because of this, Ansible can perform rolling updates of multiple systems with zero downtime.
+
+Ansible was originally written by Michael DeHaan, the creator of the Cobbler provisioning application.
+Ansible has been widely adopted because system administrators find it simple to use and developers
+can ease into it because it is built on Python. Ansible is supported by DevOps tools such as Vagrant and Jenkins.
+
+endif::showscript[]

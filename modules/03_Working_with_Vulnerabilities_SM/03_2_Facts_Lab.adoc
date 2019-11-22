@@ -1,0 +1,339 @@
+:scrollbar:
+:data-uri:
+:linkattrs:
+:toc2:
+:labname: Facts
+:show_solution: false
+
+
+== {labname} Lab
+
+In this lab, you gather Ansible facts from a managed host. Then you create custom facts and use them in a playbook. Finally, you install packages based on those custom facts.
+
+.Goals
+* Work with facts
+* Create custom facts
+* Verify custom facts
+* Use facts to configure the web server hosts
+
+:numbered:
+
+
+[[labexercises]]
+== Connect to Environment
+
+. Set some useful environment variables:
++
+[source,sh]
+----
+[laptop ]$ export GUID=<"GUID from email">
+[laptop ]$ export MYKEY=<~/.ssh/your_key.pem>
+[laptop ]$ export MYUSER=<username-company.com>
+----
++
+.Example
+[source,sh]
+----
+[laptop ]$ export GUID=e4gh
+[laptop ]$ export MYKEY=~/.ssh/psrivatkey
+[laptop ]$ export MYUSER=psrivast-redhat.com
+----
+
+. Connect to the `bastion` host with your OPENTLC ID and private key:
++
+[source,sh]
+----
+[laptop ]$ ssh -i ${MYKEY} ${MYUSER}@bastion.${GUID}.example.opentlc.com
+----
+
+== Gather Facts
+
+In this section, you gather Ansible facts from a managed host and examine them.
+
+. Using the Ansible `setup` module, run an ad hoc command to retrieve the facts for all of the servers in the `db` group:
++
+[source,sh]
+----
+[user-company.com@bastion ~]$ sudo -i
+[root@bastion ~]# su - devops
+[devops@bastion ~]$ export GUID=`hostname | awk -F"." '{print $2}'`
+[devops@bastion ~]$ cd ~/ansible_implementation
+[devops@bastion ansible_implementation]$ ansible db -m setup
+----
++
+.Sample Output
+[source,texinfo]
+----
+appdb1.${GUID}.internal | SUCCESS => {
+    "ansible_facts": {
+        "ansible_all_ipv4_addresses": [
+            "192.199.0.176"
+        ],
+        "ansible_all_ipv6_addresses": [
+            "fe80::97:55ff:feb1:12b8"
+        ],
+        "ansible_apparmor": {
+            "status": "disabled"
+        },
+        "ansible_architecture": "x86_64",
+        "ansible_bios_date": "08/24/2006",
+        "ansible_bios_version": "4.2.amazon",
+        "ansible_cmdline": {
+            "BOOT_IMAGE": "/boot/vmlinuz-3.10.0-693.el7.x86_64",
+            "LANG": "en_US.UTF-8",
+            "console": "tty0",
+            "crashkernel": "auto",
+            "net.ifnames": "0",
+
+Output Omitted...
+
+----
+* The output displays all of the facts gathered for `appdb1` server in JSON format.
+
+. Review the variables displayed.
+
+. Filter the facts matching the `ansible_user` expression and append a wildcard to match all of the facts starting with `ansible_user`:
++
+[source,sh]
+----
+[devops@bastion ansible_implementation]$ ansible db -m setup -a 'filter=ansible_user*'
+----
++
+.Sample Output
+[source,texinfo]
+----
+appdb1.${GUID}.internal | SUCCESS => {
+    "ansible_facts": {
+        "ansible_user_dir": "/home/devops",
+        "ansible_user_gecos": "",
+        "ansible_user_gid": 1001,
+        "ansible_user_id": "devops",
+        "ansible_user_shell": "/bin/bash",
+        "ansible_user_uid": 1001,
+        "ansible_userspace_architecture": "x86_64",
+        "ansible_userspace_bits": "64"
+    },
+    "changed": false
+}
+
+----
+
+
+== Create Custom Facts
+
+In this section, you set custom facts for the managed hosts in the `webservers` host group.
+
+. Create a fact file named `custom.fact` with the following content:
++
+[source,sh]
+----
+[devops@bastion ansible_implementation]$ cat << EOF > custom.fact
+[general]
+package = httpd
+service = httpd
+state = started
+EOF
+----
+* This defines the package to install and the service to start on `app1` and `app2`.
+
+. Create a `setup_facts.yml` playbook to create the `/etc/ansible/facts.d` remote directory and save the `custom.fact` file to it:
++
+[source,sh]
+----
+[devops@bastion ansible_implementation]$ cat << EOF > setup_facts.yml
+- name: Install remote facts
+  hosts: webservers
+  become: yes
+  vars:
+    remote_dir: /etc/ansible/facts.d
+    facts_file: custom.fact
+  tasks:
+  - name: Create the remote directory
+    file:
+      state: directory
+      recurse: yes
+      path: "{{ remote_dir }}"
+  - name: Install the new facts
+    copy:
+      src: "{{ facts_file }}"
+      dest: "{{ remote_dir }}"
+EOF
+----
+
+. Run the playbook:
++
+[source,sh]
+----
+[devops@bastion ansible_implementation]$ ansible-playbook setup_facts.yml
+----
+
+. Using the `setup` module, run an ad hoc command to display only the `ansible_local` section, which contains user-defined facts:
++
+[source,sh]
+----
+[devops@bastion ansible_implementation]$ ansible webservers -m setup -a 'filter=ansible_local'
+----
++
+.Sample Output
+[source,texinfo]
+----
+app2.${GUID}.internal | SUCCESS => {
+    "ansible_facts": {
+        "ansible_local": {
+            "custom": {
+                "general": {
+                    "package": "httpd",
+                    "service": "httpd",
+                    "state": "started"
+                }
+            }
+        }
+    },
+    "changed": false
+}
+app1.${GUID}.internal | SUCCESS => {
+    "ansible_facts": {
+        "ansible_local": {
+            "custom": {
+                "general": {
+                    "package": "httpd",
+                    "service": "httpd",
+                    "state": "started"
+                }
+            }
+        }
+    },
+    "changed": false
+}
+----
+* Expect the custom facts to appear.
+
+
+== Use Facts to Configure Web Servers
+
+In this section, you write a playbook that uses both default and user-defined facts to configure the `webservers` host group, and  make sure that all of the tasks are defined.
+
+. Create the first task, which installs the `httpd` package, using the user fact for the name of the package.
+
+. Create another task that uses the custom fact to start the `httpd` service:
++
+[source,sh]
+----
+[devops@bastion ansible_implementation]$ cat << EOF > setup_facts_httpd.yml
+- name: Install Apache and starts the service
+  hosts: webservers
+  become: yes
+  tasks:
+  - name: Install the required package
+    yum:
+      name: "{{ ansible_local.custom.general.package }}"
+      state: latest
+
+  - name: Start the service
+    service:
+      name: "{{ ansible_local.custom.general.service }}"
+      state: "{{ ansible_local.custom.general.state }}"
+EOF
+----
+
+. Run the playbook:
++
+[source,sh]
+----
+[devops@bastion ansible_implementation]$ ansible-playbook setup_facts_httpd.yml
+----
++
+.Sample Output
+[source,texinfo]
+----
+PLAY [Install Apache and starts the service] *******************************************************************************************
+
+TASK [Gathering Facts] *****************************************************************************************************************
+ok: [app2.${GUID}.internal]
+ok: [app1.${GUID}.internal]
+
+TASK [Install the required package] ****************************************************************************************************
+changed: [app1.${GUID}.internal]
+changed: [app2.${GUID}.internal]
+
+TASK [Start the service] ***************************************************************************************************************
+changed: [app2.${GUID}.internal]
+changed: [app1.${GUID}.internal]
+
+PLAY RECAP *****************************************************************************************************************************
+app1.${GUID}.internal         : ok=3    changed=2    unreachable=0    failed=0
+app2.${GUID}.internal         : ok=3    changed=2    unreachable=0    failed=0
+
+----
+
+. Use an ad hoc command to determine whether the `httpd` service is running on `webservers`:
++
+[source,sh]
+----
+[devops@bastion ansible_implementation]$ ansible webservers -m command -a 'systemctl status httpd'
+----
++
+.Sample Output
+[source,texinfo]
+----
+app2.${GUID}.internal | SUCCESS | rc=0 >>
+● httpd.service - The Apache HTTP Server
+   Loaded: loaded (/usr/lib/systemd/system/httpd.service; disabled; vendor preset: disabled)
+   Active: active (running) since Fri 2018-08-17 11:41:58 UTC; 2min 19s ago
+     Docs: man:httpd(8)
+           man:apachectl(8)
+ Main PID: 2536 (httpd)
+   Status: "Total requests: 0; Current requests/sec: 0; Current traffic:   0 B/sec"
+   CGroup: /system.slice/httpd.service
+           ├─2536 /usr/sbin/httpd -DFOREGROUND
+           ├─2537 /usr/sbin/httpd -DFOREGROUND
+           ├─2538 /usr/sbin/httpd -DFOREGROUND
+           ├─2539 /usr/sbin/httpd -DFOREGROUND
+           ├─2540 /usr/sbin/httpd -DFOREGROUND
+           └─2541 /usr/sbin/httpd -DFOREGROUND
+
+app1.${GUID}.internal | SUCCESS | rc=0 >>
+● httpd.service - The Apache HTTP Server
+   Loaded: loaded (/usr/lib/systemd/system/httpd.service; disabled; vendor preset: disabled)
+   Active: active (running) since Fri 2018-08-17 11:41:58 UTC; 2min 19s ago
+     Docs: man:httpd(8)
+           man:apachectl(8)
+ Main PID: 2516 (httpd)
+   Status: "Total requests: 0; Current requests/sec: 0; Current traffic:   0 B/sec"
+   CGroup: /system.slice/httpd.service
+           ├─2516 /usr/sbin/httpd -DFOREGROUND
+           ├─2517 /usr/sbin/httpd -DFOREGROUND
+           ├─2518 /usr/sbin/httpd -DFOREGROUND
+           ├─2519 /usr/sbin/httpd -DFOREGROUND
+           ├─2520 /usr/sbin/httpd -DFOREGROUND
+           └─2521 /usr/sbin/httpd -DFOREGROUND
+
+----
+
+
+== Evaluate Your Progress
+
+. Grade your work:
++
+[source,sh]
+----
+[devops@bastion ~]$ cd ~/ansible_implementation_grading/
+[devops@bastion ansible_implementation_grading]$ export GUID=`hostname | awk -F"." '{print $2}'`
+[devops@bastion ansible_implementation_grading]$ ansible-playbook lab-3.2-grade.yml -e GUID=${GUID}
+----
+
+. Correct any reported failures.
+
+. Rerun the script until you see no failures.
+
+
+== Clean Up Environment
+
+. Run a playbook to perform the cleanup:
++
+[source,sh]
+----
+[devops@bastion ansible_implementation]$ cd ~/ansible_implementation_grading/
+[devops@bastion ansible_implementation_grading]$ export GUID=`hostname | awk -F"." '{print $2}'`
+[devops@bastion ansible_implementation_grading]$ ansible-playbook lab-3.2-cleanup.yml -e GUID=${GUID}
+----
