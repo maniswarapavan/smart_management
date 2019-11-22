@@ -2,7 +2,8 @@
 :scrollbar:
 :data-uri:
 
-== Your Challenges
+= Your Challenges
+
 
 [cols="a,2"]
 |===
