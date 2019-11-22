@@ -4,31 +4,18 @@
 
 == Topics
 
-* Overview
-* Architecture
-* Use Cases
-* Deployments
-* Orchestration Methods
-* Connection Plug-ins
-* Ansible Configuration
-* Prerequisites
-* Modules
-* Ad Hoc Commands
+* Key Challenges
+* Red Hat Smart Management
+* Red Hat Insights
+* Cloud management services for RHEL
+* Cloud management services Architecture
+* Ansible Integration and Support
+* Resources and Next Steps
+
 
 ifdef::showscript[]
 
 Transcript:
 
-In this module, you learn the following:
-
-* Ansible is an agentless configuration management tool built on Python.
-* Ansible is installed on the control node and keeps its configuration files there.
-* Ansible copies modules from the control node to the managed hosts, where it executes them in the order specified in the playbook.
-* Ansible is ideal for deploying applications in parallel on Red Hat Enterprise Linux, Red Hat JBoss Middleware, and Red Hat OpenShift Container Platform, and it can assist with Red Hat Satellite system management.
-* Ansible can orchestrate zero-downtime rollover application upgrades.
-* Native SSH is Ansible's default connection plug-in, but the Paramiko plug-in provides efficient SSH communications with Red Hat Enterprise Linux 5 and 6 systems.
-* Ansible can be configured through a variety of methods.
-* Ansible ships with a _module library_--a collection of modules which can be executed directly on remote hosts or through playbooks.
-* Ad hoc commands in Ansible allow you to execute simple tasks at the command line against one or all of your hosts.
 
 endif::showscript[]
